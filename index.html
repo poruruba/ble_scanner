@@ -52,8 +52,16 @@
                 <option value="50">50</option>
                 <option value="100">100</option>
             </select>
-            <label>更新間隔</label>
+            &nbsp;<label>更新間隔</label>
             <select class="form-control input-sm" v-model.number="update_interval" v-on:change="interval_change">
+                <option value="500">0.5s</option>
+                <option value="1000">1s</option>
+                <option value="5000">5s</option>
+                <option value="10000">10s</option>
+                <option value="60000">60s</option>
+            </select>
+            &nbsp;<label>ロスト間隔</label>
+            <select class="form-control input-sm" v-model.number="lost_interval">
                 <option value="500">0.5s</option>
                 <option value="1000">1s</option>
                 <option value="5000">5s</option>
