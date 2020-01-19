@@ -78,6 +78,7 @@ var vue_options = {
         update_graph(){
             for( var i = 0 ; i < devices.length ; i++ ){
                 devices[i].datasets.unshift(devices[i].peripheral.rssi);
+                devices[i].peripheral.rssi = 0;
             }
 
             var current_datasets = [];
