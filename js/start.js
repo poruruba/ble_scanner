@@ -9,6 +9,7 @@ const NUM_OF_DATA = 50;
 const UPDATE_INTERVAL = 1000;
 const LOST_INTERVAL = 5000;
 var timer = null;
+const COOKIE_EXPIRE = 365;
 
 var vue_options = {
     el: "#top",
@@ -30,6 +31,7 @@ var vue_options = {
 
             noble.on('stateChange', (state) => {
                 if (state === 'poweredOn') {
+                    Cookies.set('obniz_id', this.obniz_id, { expires: COOKIE_EXPIRE });
                     this.obniz_connected = true;
                     noble.startScanning([], true);
     
@@ -123,6 +125,8 @@ var vue_options = {
     },
     mounted: function(){
         proc_load();
+
+        this.obniz_id = Cookies.get('obniz_id');
     }
 };
 vue_add_methods(vue_options, methods_utils);
