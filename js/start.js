@@ -19,6 +19,7 @@ var vue_options = {
         device: null,
         num_of_data: NUM_OF_DATA,
         update_interval: UPDATE_INTERVAL,
+        lost_interval: LOST_INTERVAL,
         obniz_connected: false,
     },
     computed: {
@@ -80,7 +81,7 @@ var vue_options = {
         },
         update_graph(){
             for( var i = 0 ; i < devices.length ; i++ ){
-                if( devices[i].counter * this.update_interval < LOST_INTERVAL ){
+                if( devices[i].counter * this.update_interval < this.lost_interval ){
                     devices[i].datasets.unshift(devices[i].peripheral.rssi);
                     devices[i].counter++;
                 }else{
