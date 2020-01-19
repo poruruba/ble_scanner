@@ -102,7 +102,7 @@ var vue_options = {
                 for( var i = 0 ; i < current_datasets.length ; i++ ){
                     for( var j = 0 ; j < this.num_of_data ; j++ ){
                         if( j > devices[i].datasets.length ){
-                            current_datasets[i].data[this.num_of_data - 1 - j] = 0;
+                            current_datasets[i].data[this.num_of_data - 1 - j] = NaN;
                         }else{
                             current_datasets[i].data[this.num_of_data - 1 - j] = devices[i].datasets[j];
                         }
@@ -138,9 +138,6 @@ var myChart = new Chart(ctx, {
         animation: false,
         scales: {
             yAxes: [{
-                ticks: {
-                    max: -1
-                },
                 scaleLabel: {
                     display: true,
                     labelString: 'RSSI [dB]'
