@@ -7,6 +7,7 @@ var noble;
 var devices = [];
 const NUM_OF_DATA = 50;
 const UPDATE_INTERVAL = 1000;
+const LOST_INTERVAL = 5000;
 var timer = null;
 
 var vue_options = {
@@ -43,6 +44,7 @@ var vue_options = {
                 if( device ){
     //                device.peripheral = peripheral;
                     device.peripheral.rssi = peripheral.rssi;
+                    device.counter = 0;
                 }else{
     //                var peri = peripheral;
                     var peri = {
@@ -61,7 +63,8 @@ var vue_options = {
                     devices.push({
                         peripheral: peri,
                         display: "display",
-                        datasets: []
+                        datasets: [],
+                        counter: 0,
                     });
                 }
             });
@@ -77,7 +80,12 @@ var vue_options = {
         },
         update_graph(){
             for( var i = 0 ; i < devices.length ; i++ ){
-                devices[i].datasets.unshift(devices[i].peripheral.rssi);
+                if( devices[i].counter * this.update_interval < LOST_INTERVAL ){
+                    devices[i].datasets.unshift(devices[i].peripheral.rssi);
+                    devices[i].counter++;
+                }else{
+                    devices[i].datasets.unshift(NaN);
+                }
             }
 
             var current_datasets = [];
@@ -86,8 +94,8 @@ var vue_options = {
                     label: devices[i].peripheral.advertisement.localName ? devices[i].peripheral.advertisement.localName : devices[i].peripheral.address,
                     data: [],
                     fill: false,
-                    hidden: devices[i].display != "display" }
-                );
+                    hidden: devices[i].display != "display"
+                });
             }
 
             if( current_datasets.length > 0 ){
