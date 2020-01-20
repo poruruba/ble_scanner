@@ -4,11 +4,11 @@
 
 var noble;
 
+var timer = null;
 var devices = [];
 const NUM_OF_DATA = 50;
 const UPDATE_INTERVAL = 1000;
 const LOST_INTERVAL = 5000;
-var timer = null;
 const COOKIE_EXPIRE = 365;
 
 var vue_options = {
@@ -22,14 +22,17 @@ var vue_options = {
         update_interval: UPDATE_INTERVAL,
         lost_interval: LOST_INTERVAL,
         obniz_connected: false,
+        message: '',
     },
     computed: {
     },
     methods: {
         obniz_connect: function(){
             noble = obnizNoble(this.obniz_id);
-
+            this.message = '接続試行中';
+ 
             noble.on('stateChange', (state) => {
+                this.message = '';
                 if (state === 'poweredOn') {
                     Cookies.set('obniz_id', this.obniz_id, { expires: COOKIE_EXPIRE });
                     this.obniz_connected = true;
@@ -45,11 +48,11 @@ var vue_options = {
             noble.on('discover', (peripheral) => {
                 var device = devices.find(item => item.peripheral.address == peripheral.address);
                 if( device ){
-    //                device.peripheral = peripheral;
+//                    device.peripheral = peripheral;
                     device.peripheral.rssi = peripheral.rssi;
                     device.counter = 0;
                 }else{
-    //                var peri = peripheral;
+//                    var peri = peripheral;
                     var peri = {
                         address: peripheral.address,
                         addressType: peripheral.addressType,
@@ -62,7 +65,7 @@ var vue_options = {
                         },
                         rssi: peripheral.rssi,
                     };
-    
+
                     devices.push({
                         peripheral: peri,
                         display: "display",
@@ -87,6 +90,7 @@ var vue_options = {
                     devices[i].datasets.unshift(devices[i].peripheral.rssi);
                     devices[i].counter++;
                 }else{
+                    devices[i].peripheral.rssi = NaN;
                     devices[i].datasets.unshift(NaN);
                 }
             }
@@ -94,10 +98,10 @@ var vue_options = {
             var current_datasets = [];
             for( var i = 0 ; i < devices.length ; i++ ){
                 current_datasets.push({
-                    label: devices[i].peripheral.advertisement.localName ? devices[i].peripheral.advertisement.localName : devices[i].peripheral.address,
+                    label: devices[i].peripheral.advertisement.localName || devices[i].peripheral.address,
                     data: [],
                     fill: false,
-                    hidden: devices[i].display != "display"
+                    hidden: (devices[i].display != "display")
                 });
             }
 
@@ -117,6 +121,7 @@ var vue_options = {
                 }
                 myChart.data.datasets = current_datasets;
                 myChart.data.labels = labels;
+
                 myChart.update();
             }
         }
@@ -132,8 +137,7 @@ var vue_options = {
 vue_add_methods(vue_options, methods_utils);
 var vue = new Vue( vue_options );
 
-var ctx = $('#chart')[0].getContext('2d');
-var myChart = new Chart(ctx, {
+var myChart = new Chart( $('#chart')[0].getContext('2d'), {
     type: 'line',
     data: {
         labels: [],
