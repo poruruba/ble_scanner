@@ -22,17 +22,16 @@ var vue_options = {
         update_interval: UPDATE_INTERVAL,
         lost_interval: LOST_INTERVAL,
         obniz_connected: false,
-        message: '',
     },
     computed: {
     },
     methods: {
         obniz_connect: function(){
             noble = obnizNoble(this.obniz_id);
-            this.message = '接続試行中';
+            this.progress_open('接続試行中', true);
  
             noble.on('stateChange', (state) => {
-                this.message = '';
+                this.progress_close();
                 if (state === 'poweredOn') {
                     Cookies.set('obniz_id', this.obniz_id, { expires: COOKIE_EXPIRE });
                     this.obniz_connected = true;
