@@ -79,6 +79,7 @@ var vue_options = {
             });
 
             if( this.is_m5stickc ){
+                // obniz-nobleとobniz.jsの同時利用はサポート外(2020/1/29)
                 obniz = new M5StickC(this.obniz_id, {local_connect: false});
                 obniz.onconnect = async () =>{
                     await obniz.wait(100);
