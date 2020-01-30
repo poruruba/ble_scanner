@@ -26,12 +26,11 @@
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
-<!--
   <script src="https://unpkg.com/obniz/obniz.js"></script>
   <script src="https://unpkg.com/m5stickcjs/m5stickc.js"></script>
--->
 
   <script src="https://unpkg.com/obniz-noble/obniz-noble.js" crossorigin="anonymous"></script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
   <script src="https://unpkg.com/chartjs-plugin-colorschemes"></script>
 </head>
@@ -41,6 +40,11 @@
         <div class="form-inline">
             <label>obniz id</label>
             <input type="text" class="form-control" v-model="obniz_id" v-bind:readonly="obniz_connected">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" v-model="is_m5stickc">M5StickC
+                </label>
+            </div>
             <button v-if="!obniz_connected" class="btn btn-default btn-sm" v-on:click="obniz_connect">接続</button>
         </div>
 
@@ -51,16 +55,16 @@
                 <option value="20">20</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
-            </select>
-            &nbsp;<label>更新間隔</label>
+            </select>&nbsp;
+            <label>更新間隔</label>
             <select class="form-control input-sm" v-model.number="update_interval" v-on:change="interval_change">
                 <option value="500">0.5s</option>
                 <option value="1000">1s</option>
                 <option value="5000">5s</option>
                 <option value="10000">10s</option>
                 <option value="60000">60s</option>
-            </select>
-            &nbsp;<label>ロスト間隔</label>
+            </select>&nbsp;
+            <label>ロスト間隔</label>
             <select class="form-control input-sm" v-model.number="lost_interval">
                 <option value="500">0.5s</option>
                 <option value="1000">1s</option>
