@@ -3,6 +3,7 @@
 //var vConsole = new VConsole();
 
 var noble;
+let obniz;
 
 var timer = null;
 var devices = [];
@@ -22,6 +23,10 @@ var vue_options = {
         update_interval: UPDATE_INTERVAL,
         lost_interval: LOST_INTERVAL,
         obniz_connected: false,
+        display_width: 0,
+        display_height: 0,
+        display_context: null,
+        is_m5stickc: false,
     },
     computed: {
     },
@@ -29,7 +34,7 @@ var vue_options = {
         obniz_connect: function(){
             noble = obnizNoble(this.obniz_id);
             this.progress_open('接続試行中', true);
- 
+
             noble.on('stateChange', (state) => {
                 this.progress_close();
                 if (state === 'poweredOn') {
@@ -64,7 +69,6 @@ var vue_options = {
                         },
                         rssi: peripheral.rssi,
                     };
-
                     devices.push({
                         peripheral: peri,
                         display: "display",
@@ -73,6 +77,28 @@ var vue_options = {
                     });
                 }
             });
+
+            if( this.is_m5stickc ){
+                obniz = new M5StickC(this.obniz_id);
+                obniz.onconnect = async () =>{
+                    await obniz.wait(100);
+                    await obniz.m5display.onWait();
+
+                    this.display_width = obniz.m5display.width;
+                    this.display_height = obniz.m5display.height;
+
+                    this.display_context = obniz.util.createCanvasContext(this.display_width, this.display_height);
+                    this.display_context.fillStyle = "white";
+                    this.display_context.font = "20px Avenir";
+                    this.display_context.translate(this.display_width / 2, this.display_height / 2);
+                    this.display_context.rotate(Math.PI / 2);
+                    this.display_context.translate(-this.display_height / 2, -this.display_width / 2);
+                    this.display_context.fillText('hw:' + obniz.hw, 0, 20);
+                    this.display_context.fillText('fw:' + obniz.firmware_ver, 0, 40);
+
+                    await obniz.m5display.draw(this.display_context);
+                };
+            }
         },
         interval_change: function(){
             if( timer != null ){
@@ -83,7 +109,7 @@ var vue_options = {
                 this.update_graph();
             }, this.update_interval);
         },
-        update_graph(){
+        async update_graph(){
             for( var i = 0 ; i < devices.length ; i++ ){
                 if( devices[i].counter * this.update_interval < this.lost_interval ){
                     devices[i].datasets.unshift(devices[i].peripheral.rssi);
@@ -123,7 +149,19 @@ var vue_options = {
 
                 myChart.update();
             }
-        }
+
+            if( obniz && this.device != null ){
+                this.display_context.clearRect(0, 0, this.display_height, this.display_width);
+
+                this.display_context.font = "15px Avenir";
+                var name = this.device.peripheral.advertisement.localName || this.device.peripheral.address;
+                this.display_context.fillText(name, 0, 20);
+                this.display_context.font = "40px Avenir";
+                this.display_context.fillText(this.device.peripheral.rssi, 0, 65);
+
+                await obniz.m5display.draw(this.display_context);            
+            }
+        },
     },
     created: function(){
     },
