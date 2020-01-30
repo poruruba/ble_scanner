@@ -79,7 +79,7 @@ var vue_options = {
             });
 
             if( this.is_m5stickc ){
-                obniz = new M5StickC(this.obniz_id);
+                obniz = new M5StickC(this.obniz_id, {local_connect: false});
                 obniz.onconnect = async () =>{
                     await obniz.wait(100);
                     await obniz.m5display.onWait();
